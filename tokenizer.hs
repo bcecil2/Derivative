@@ -39,9 +39,6 @@ createNum expr
                rest = drop (length num) expr
 
 -- Takes in a String and returns a list of tokens
--- TODO: generalize Toknum to be a float and write a
--- function similar to createId that constructs floats 
--- from a string representation
 tokenize :: String -> [Token]
 tokenize [] = []
 tokenize (x:xs)
