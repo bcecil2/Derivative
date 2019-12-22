@@ -1,9 +1,12 @@
+module Tokenizer where
+
 import Data.Char
 import Data.List
 
+
 -- Primitive data types that will be used to build up expressions --
-data Operator = Plus | Minus | Times | Div deriving(Show, Eq)
-data Token = Tokop Operator | Tokid String | Toknum Float deriving(Show, Eq) 
+data Operator = Plus | Minus | Times | Div  | Pow deriving(Show, Eq)
+data Token = Tokop Operator | Tokid String | Toknum Float | TokLParen | TokRParen | TokEnd deriving(Show, Eq) 
 
 -- Helper function to print operators --
 showOp :: Operator -> String
@@ -11,6 +14,15 @@ showOp Plus = "+"
 showOp Minus = "-"
 showOp Times = "*"
 showOp Div = "/"
+showOp Pow = "^"
+
+getOp :: Char -> Operator
+getOp op
+        | op == '+' = Plus
+	| op == '-' = Minus
+	| op == '*' = Times
+	| op == '/' = Div
+	| op == '^' = Pow
 
 -- Helper function to print tokens --
 showToken :: Token -> String
@@ -42,7 +54,9 @@ createNum expr
 tokenize :: String -> [Token]
 tokenize [] = []
 tokenize (x:xs)
-    | elem x "+-*/" = Tokop Plus : tokenize xs
+    | elem x "+-*/^" = Tokop (getOp x) : tokenize xs
+    | x == '(' = TokLParen : tokenize xs
+    | x == ')' = TokRParen : tokenize xs
     | isAlpha x = Tokid (fst identifier) : tokenize (snd identifier) 
     | isDigit x = Toknum (read $ fst number :: Float) : tokenize (snd number)
     | isSpace x = tokenize xs
@@ -50,9 +64,5 @@ tokenize (x:xs)
        where identifier =  createId(x:xs)
              number = createNum(x:xs)
 
---test code w o r k s g r e a t
-expr = "R22.323D420+C3PO" 
 
 
-main = do
-    print $ tokenize expr 
